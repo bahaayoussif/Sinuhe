@@ -1,0 +1,22 @@
+{
+  "sqlite": {
+    "type": "sqlite",
+    "db_path": "build/company_from_config.sqlite"
+  },
+  "postgresql": {
+    "type": "postgresql",
+    "host": "localhost",
+    "port": 5432,
+    "database": "sim_db",
+    "user": "admin",
+    "password": "your_password"
+  },
+  "mysql": {
+    "type": "mysql",
+    "host": "localhost",
+    "port": 3306,
+    "database": "sim_db",
+    "user": "root",
+    "password": "your_password"
+  }
+}

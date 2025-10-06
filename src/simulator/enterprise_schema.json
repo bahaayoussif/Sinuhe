@@ -1,0 +1,448 @@
+{
+  "overwrite": true,
+  "tables": [
+    {
+      "name": "regions",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "name", "type": "TEXT NOT NULL UNIQUE"}
+      ],
+      "populate": {
+        "count": 4,
+        "data": [
+          {"column": "name", "faker_provider": "random_element", "args": {"elements": ["Americas", "EMEA", "Asia-Pacific", "LATAM"]}}
+        ]
+      }
+    },
+    {
+      "name": "countries",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "name", "type": "TEXT NOT NULL UNIQUE"},
+        {"name": "country_code", "type": "TEXT(2) NOT NULL UNIQUE"},
+        {"name": "region_id", "type": "INTEGER", "foreign_key": "regions(id)"}
+      ],
+      "populate": {
+        "count": 20,
+        "data": [
+          {"column": "name", "faker_provider": "unique.country"},
+          {"column": "country_code", "faker_provider": "unique.country_code"},
+          {"column": "region_id", "faker_provider": "random_element", "source_table": "regions", "source_column": "id"}
+        ]
+      }
+    },
+    {
+      "name": "locations",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "address", "type": "TEXT NOT NULL"},
+        {"name": "city", "type": "TEXT NOT NULL"},
+        {"name": "postal_code", "type": "TEXT"},
+        {"name": "country_id", "type": "INTEGER", "foreign_key": "countries(id)"}
+      ],
+      "populate": {
+        "count": 30,
+        "data": [
+          {"column": "address", "faker_provider": "street_address"},
+          {"column": "city", "faker_provider": "city"},
+          {"column": "postal_code", "faker_provider": "postcode"},
+          {"column": "country_id", "faker_provider": "random_element", "source_table": "countries", "source_column": "id"}
+        ]
+      }
+    },
+    {
+      "name": "departments",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "name", "type": "TEXT NOT NULL UNIQUE"}
+      ],
+      "populate": {
+        "count": 8,
+        "data": [
+          {"column": "name", "faker_provider": "random_element", "args": {"elements": ["Engineering", "Sales", "Marketing", "Finance", "Human Resources", "Support", "Executive", "Research"]}}
+        ]
+      }
+    },
+    {
+      "name": "positions",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "title", "type": "TEXT NOT NULL UNIQUE"},
+        {"name": "min_salary", "type": "REAL"},
+        {"name": "max_salary", "type": "REAL"}
+      ],
+      "populate": {
+        "count": 15,
+        "data": [
+          {"column": "title", "faker_provider": "unique.job"},
+          {"column": "min_salary", "faker_provider": "pyint", "args": {"min_value": 40000, "max_value": 60000}},
+          {"column": "max_salary", "faker_provider": "pyint", "args": {"min_value": 70000, "max_value": 200000}}
+        ]
+      }
+    },
+    {
+      "name": "employees",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "first_name", "type": "TEXT NOT NULL"},
+        {"name": "last_name", "type": "TEXT NOT NULL"},
+        {"name": "email", "type": "TEXT NOT NULL UNIQUE"},
+        {"name": "hire_date", "type": "DATE"},
+        {"name": "department_id", "type": "INTEGER", "foreign_key": "departments(id) ON DELETE SET NULL"},
+        {"name": "position_id", "type": "INTEGER", "foreign_key": "positions(id) ON DELETE SET NULL"},
+        {"name": "manager_id", "type": "INTEGER", "foreign_key": "employees(id) ON DELETE SET NULL"}
+      ],
+      "populate": {
+        "count": 200,
+        "data": [
+          {"column": "first_name", "faker_provider": "first_name"},
+          {"column": "last_name", "faker_provider": "last_name"},
+          {"column": "email", "faker_provider": "unique.email"},
+          {"column": "hire_date", "faker_provider": "date_between", "args": {"start_date": "-10y"}},
+          {"column": "department_id", "faker_provider": "random_element", "source_table": "departments", "source_column": "id"},
+          {"column": "position_id", "faker_provider": "random_element", "source_table": "positions", "source_column": "id"},
+          {"column": "manager_id", "faker_provider": "random_element", "source_table": "employees", "source_column": "id", "allow_null": 0.1}
+        ]
+      }
+    },
+    {
+      "name": "salary_history",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "employee_id", "type": "INTEGER", "foreign_key": "employees(id) ON DELETE CASCADE"},
+        {"name": "effective_date", "type": "DATE NOT NULL"},
+        {"name": "amount", "type": "REAL NOT NULL"}
+      ],
+      "populate": {
+        "count_per_source": {"source_table": "employees", "min": 1, "max": 5},
+        "data": [
+          {"column": "employee_id", "is_source_id": true},
+          {"column": "effective_date", "faker_provider": "date_between", "args": {"start_date": "-5y"}},
+          {"column": "amount", "faker_provider": "pyint", "args": {"min_value": 50000, "max_value": 180000}}
+        ]
+      }
+    },
+    {
+      "name": "skills",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "name", "type": "TEXT NOT NULL UNIQUE"}
+      ],
+      "populate": {
+        "count": 25,
+        "data": [
+          {"column": "name", "faker_provider": "random_element", "args": {"elements": ["Python", "Java", "Project Management", "SQL", "Cloud Computing", "AWS", "Azure", "Docker", "Kubernetes", "Machine Learning", "Data Analysis", "React", "Vue.js", "Go", "Rust", "Public Speaking", "Negotiation", "Graphic Design", "UI/UX", "Scrum Master", "Agile", "C++", "System Design", "DevOps", "CI/CD"]}}
+        ]
+      }
+    },
+    {
+      "name": "employee_skills",
+      "columns": [
+        {"name": "employee_id", "type": "INTEGER", "foreign_key": "employees(id) ON DELETE CASCADE"},
+        {"name": "skill_id", "type": "INTEGER", "foreign_key": "skills(id) ON DELETE CASCADE"}
+      ],
+      "primary_key": ["employee_id", "skill_id"],
+      "populate": {
+        "count_per_source": {"source_table": "employees", "min": 2, "max": 6},
+        "data": [
+          {"column": "employee_id", "is_source_id": true},
+          {"column": "skill_id", "faker_provider": "random_element", "source_table": "skills", "source_column": "id"}
+        ]
+      }
+    },
+    {
+      "name": "performance_reviews",
+      "columns": [
+          {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+          {"name": "employee_id", "type": "INTEGER", "foreign_key": "employees(id) ON DELETE CASCADE"},
+          {"name": "reviewer_id", "type": "INTEGER", "foreign_key": "employees(id) ON DELETE SET NULL"},
+          {"name": "review_date", "type": "DATE"},
+          {"name": "rating", "type": "INTEGER CHECK(rating >= 1 AND rating <= 5)"},
+          {"name": "comments", "type": "TEXT"}
+      ],
+      "populate": {
+          "count": 300,
+          "data": [
+              {"column": "employee_id", "faker_provider": "random_element", "source_table": "employees", "source_column": "id"},
+              {"column": "reviewer_id", "faker_provider": "random_element", "source_table": "employees", "source_column": "id"},
+              {"column": "review_date", "faker_provider": "date_between", "args": {"start_date": "-3y"}},
+              {"column": "rating", "faker_provider": "pyint", "args": {"min_value": 1, "max_value": 5}},
+              {"column": "comments", "faker_provider": "paragraph", "args": {"nb_sentences": 3}}
+          ]
+      }
+    },
+    {
+      "name": "suppliers",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "name", "type": "TEXT NOT NULL UNIQUE"},
+        {"name": "contact_email", "type": "TEXT"}
+      ],
+      "populate": {
+        "count": 30,
+        "data": [
+          {"column": "name", "faker_provider": "unique.company"},
+          {"column": "contact_email", "faker_provider": "unique.email"}
+        ]
+      }
+    },
+    {
+      "name": "product_categories",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "name", "type": "TEXT NOT NULL UNIQUE"},
+        {"name": "parent_category_id", "type": "INTEGER", "foreign_key": "product_categories(id) ON DELETE SET NULL"}
+      ],
+      "populate": {
+        "count": 15,
+        "data": [
+          {"column": "name", "faker_provider": "unique.word", "args": {"ext_word_list": ["Electronics", "Books", "Clothing", "Home & Garden", "Toys", "Computers", "Smartphones", "Laptops", "Fiction", "Non-Fiction", "Men's Wear", "Women's Wear", "Kitchen", "Furniture", "Board Games"]}},
+          {"column": "parent_category_id", "faker_provider": "random_element", "source_table": "product_categories", "source_column": "id", "allow_null": 0.3}
+        ]
+      }
+    },
+    {
+      "name": "products",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "name", "type": "TEXT NOT NULL"},
+        {"name": "description", "type": "TEXT"},
+        {"name": "unit_price", "type": "REAL NOT NULL"},
+        {"name": "category_id", "type": "INTEGER", "foreign_key": "product_categories(id)"},
+        {"name": "supplier_id", "type": "INTEGER", "foreign_key": "suppliers(id)"}
+      ],
+      "populate": {
+        "count": 500,
+        "data": [
+          {"column": "name", "faker_provider": "word", "args": {"ext_word_list": ["Widget", "Gadget", "Device", "Appliance", "Tool", "Accessory", "Component"]}},
+          {"column": "description", "faker_provider": "sentence"},
+          {"column": "unit_price", "faker_provider": "pydecimal", "args": {"left_digits": 3, "right_digits": 2, "positive": true}},
+          {"column": "category_id", "faker_provider": "random_element", "source_table": "product_categories", "source_column": "id"},
+          {"column": "supplier_id", "faker_provider": "random_element", "source_table": "suppliers", "source_column": "id"}
+        ]
+      }
+    },
+    {
+      "name": "warehouses",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "name", "type": "TEXT NOT NULL UNIQUE"},
+        {"name": "location_id", "type": "INTEGER", "foreign_key": "locations(id)"}
+      ],
+      "populate": {
+        "count": 10,
+        "data": [
+          {"column": "name", "faker_provider": "word", "args": {"ext_word_list": ["Central Hub", "North Sector", "East Wing", "West Depot", "South Bay"]}},
+          {"column": "location_id", "faker_provider": "random_element", "source_table": "locations", "source_column": "id"}
+        ]
+      }
+    },
+    {
+      "name": "inventory",
+      "columns": [
+        {"name": "product_id", "type": "INTEGER", "foreign_key": "products(id) ON DELETE CASCADE"},
+        {"name": "warehouse_id", "type": "INTEGER", "foreign_key": "warehouses(id) ON DELETE CASCADE"},
+        {"name": "quantity", "type": "INTEGER NOT NULL DEFAULT 0"}
+      ],
+      "primary_key": ["product_id", "warehouse_id"],
+      "populate": {
+        "count_per_source": {"source_table": "products", "min": 1, "max": 3},
+        "data": [
+          {"column": "product_id", "is_source_id": true},
+          {"column": "warehouse_id", "faker_provider": "random_element", "source_table": "warehouses", "source_column": "id"},
+          {"column": "quantity", "faker_provider": "pyint", "args": {"min_value": 0, "max_value": 1000}}
+        ]
+      }
+    },
+    {
+      "name": "customers",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "first_name", "type": "TEXT"},
+        {"name": "last_name", "type": "TEXT"},
+        {"name": "email", "type": "TEXT NOT NULL UNIQUE"},
+        {"name": "signup_date", "type": "DATE"}
+      ],
+      "populate": {
+        "count": 1000,
+        "data": [
+          {"column": "first_name", "faker_provider": "first_name"},
+          {"column": "last_name", "faker_provider": "last_name"},
+          {"column": "email", "faker_provider": "unique.email"},
+          {"column": "signup_date", "faker_provider": "date_between", "args": {"start_date": "-4y"}}
+        ]
+      }
+    },
+    {
+      "name": "promotions",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "name", "type": "TEXT NOT NULL"},
+        {"name": "discount_percent", "type": "REAL"},
+        {"name": "start_date", "type": "DATE"},
+        {"name": "end_date", "type": "DATE"}
+      ],
+      "populate": {
+        "count": 20,
+        "data": [
+          {"column": "name", "faker_provider": "catch_phrase"},
+          {"column": "discount_percent", "faker_provider": "pydecimal", "args": {"left_digits": 2, "right_digits": 2}},
+          {"column": "start_date", "faker_provider": "date_this_year"},
+          {"column": "end_date", "faker_provider": "date_this_year"}
+        ]
+      }
+    },
+    {
+      "name": "orders",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "customer_id", "type": "INTEGER", "foreign_key": "customers(id)"},
+        {"name": "order_date", "type": "DATETIME NOT NULL"},
+        {"name": "status", "type": "TEXT CHECK(status IN ('Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'))"},
+        {"name": "promotion_id", "type": "INTEGER", "foreign_key": "promotions(id)", "allow_null": 0.7}
+      ],
+      "populate": {
+        "count": 2500,
+        "data": [
+          {"column": "customer_id", "faker_provider": "random_element", "source_table": "customers", "source_column": "id"},
+          {"column": "order_date", "faker_provider": "date_time_this_decade"},
+          {"column": "status", "faker_provider": "random_element", "args": {"elements": ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"]}},
+          {"column": "promotion_id", "faker_provider": "random_element", "source_table": "promotions", "source_column": "id", "allow_null": 0.7}
+        ]
+      }
+    },
+    {
+      "name": "order_items",
+      "columns": [
+        {"name": "order_id", "type": "INTEGER", "foreign_key": "orders(id) ON DELETE CASCADE"},
+        {"name": "product_id", "type": "INTEGER", "foreign_key": "products(id)"},
+        {"name": "quantity", "type": "INTEGER NOT NULL"},
+        {"name": "price_at_purchase", "type": "REAL NOT NULL"}
+      ],
+      "primary_key": ["order_id", "product_id"],
+      "populate": {
+        "count_per_source": {"source_table": "orders", "min": 1, "max": 8},
+        "data": [
+          {"column": "order_id", "is_source_id": true},
+          {"column": "product_id", "faker_provider": "random_element", "source_table": "products", "source_column": "id"},
+          {"column": "quantity", "faker_provider": "pyint", "args": {"min_value": 1, "max_value": 5}},
+          {"column": "price_at_purchase", "faker_provider": "pydecimal", "args": {"left_digits": 3, "right_digits": 2, "positive": true}}
+        ]
+      }
+    },
+    {
+      "name": "shipments",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "order_id", "type": "INTEGER", "foreign_key": "orders(id)"},
+        {"name": "shipment_date", "type": "DATE"},
+        {"name": "tracking_number", "type": "TEXT UNIQUE"}
+      ],
+      "populate": {
+        "count": 2000,
+        "data": [
+          {"column": "order_id", "faker_provider": "random_element", "source_table": "orders", "source_column": "id"},
+          {"column": "shipment_date", "faker_provider": "date_this_decade"},
+          {"column": "tracking_number", "faker_provider": "unique.ean", "args": {"length": 13}}
+        ]
+      }
+    },
+    {
+      "name": "payment_methods",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "customer_id", "type": "INTEGER", "foreign_key": "customers(id) ON DELETE CASCADE"},
+        {"name": "card_type", "type": "TEXT"},
+        {"name": "card_number_masked", "type": "TEXT"},
+        {"name": "expiry_date", "type": "TEXT"}
+      ],
+      "populate": {
+        "count": 1200,
+        "data": [
+          {"column": "customer_id", "faker_provider": "random_element", "source_table": "customers", "source_column": "id"},
+          {"column": "card_type", "faker_provider": "credit_card_provider"},
+          {"column": "card_number_masked", "faker_provider": "credit_card_number"},
+          {"column": "expiry_date", "faker_provider": "credit_card_expire"}
+        ]
+      }
+    },
+    {
+      "name": "invoices",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "order_id", "type": "INTEGER", "foreign_key": "orders(id)"},
+        {"name": "invoice_date", "type": "DATE"},
+        {"name": "total_amount", "type": "REAL"},
+        {"name": "status", "type": "TEXT CHECK(status IN ('Draft', 'Sent', 'Paid', 'Void'))"}
+      ],
+      "populate": {
+        "count": 2500,
+        "data": [
+          {"column": "order_id", "faker_provider": "random_element", "source_table": "orders", "source_column": "id"},
+          {"column": "invoice_date", "faker_provider": "date_this_decade"},
+          {"column": "total_amount", "faker_provider": "pydecimal", "args": {"left_digits": 4, "right_digits": 2, "positive": true}},
+          {"column": "status", "faker_provider": "random_element", "args": {"elements": ["Sent", "Paid", "Void"]}}
+        ]
+      }
+    },
+    {
+      "name": "transactions",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "invoice_id", "type": "INTEGER", "foreign_key": "invoices(id)"},
+        {"name": "payment_method_id", "type": "INTEGER", "foreign_key": "payment_methods(id)"},
+        {"name": "transaction_date", "type": "DATETIME"},
+        {"name": "amount", "type": "REAL"},
+        {"name": "status", "type": "TEXT CHECK(status IN ('Success', 'Failed', 'Pending'))"}
+      ],
+      "populate": {
+        "count": 2400,
+        "data": [
+          {"column": "invoice_id", "faker_provider": "random_element", "source_table": "invoices", "source_column": "id"},
+          {"column": "payment_method_id", "faker_provider": "random_element", "source_table": "payment_methods", "source_column": "id"},
+          {"column": "transaction_date", "faker_provider": "date_time_this_decade"},
+          {"column": "amount", "faker_provider": "pydecimal", "args": {"left_digits": 4, "right_digits": 2, "positive": true}},
+          {"column": "status", "faker_provider": "random_element", "args": {"elements": ["Success", "Failed"]}}
+        ]
+      }
+    },
+    {
+      "name": "system_users",
+      "columns": [
+          {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+          {"name": "employee_id", "type": "INTEGER UNIQUE", "foreign_key": "employees(id) ON DELETE CASCADE"},
+          {"name": "username", "type": "TEXT NOT NULL UNIQUE"},
+          {"name": "password_hash", "type": "TEXT NOT NULL"},
+          {"name": "last_login", "type": "DATETIME"}
+      ],
+      "populate": {
+          "count": 200,
+          "data": [
+              {"column": "employee_id", "faker_provider": "random_element", "source_table": "employees", "source_column": "id"},
+              {"column": "username", "faker_provider": "unique.user_name"},
+              {"column": "password_hash", "faker_provider": "sha256"},
+              {"column": "last_login", "faker_provider": "date_time_this_month"}
+          ]
+      }
+    },
+    {
+      "name": "audit_logs",
+      "columns": [
+          {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+          {"name": "user_id", "type": "INTEGER", "foreign_key": "system_users(id)"},
+          {"name": "action", "type": "TEXT"},
+          {"name": "timestamp", "type": "DATETIME"},
+          {"name": "details", "type": "TEXT"}
+      ],
+      "populate": {
+          "count": 5000,
+          "data": [
+              {"column": "user_id", "faker_provider": "random_element", "source_table": "system_users", "source_column": "id"},
+              {"column": "action", "faker_provider": "random_element", "args": {"elements": ["LOGIN_SUCCESS", "LOGIN_FAIL", "CREATE_ORDER", "UPDATE_PRODUCT", "VIEW_REPORT"]}},
+              {"column": "timestamp", "faker_provider": "date_time_this_year"},
+              {"column": "details", "faker_provider": "sentence"}
+          ]
+      }
+    }
+  ]
+}
