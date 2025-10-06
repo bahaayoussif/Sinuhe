@@ -14,8 +14,8 @@ def main():
     JSON description to a file.
     """
     # --- 1. Configuration ---
-    CONFIG_FILE = "src/simulator/db_config.json"
-    SCHEMA_FILE = "src/simulator/enterprise_schema.json"
+    CONFIG_FILE = "src/simulator/resources/db_config.json"
+    SCHEMA_FILE = "src/simulator/resources/enterprise_schema.json"
 
     # --- 2. Simulate the Database ---
     print("--- Step 1: Simulating a complex database... ---")

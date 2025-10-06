@@ -12,8 +12,8 @@ def run_simulation():
     """
     Main function to run the SQLite database simulation.
     """
-    CONFIG_FILE = "src/simulator/db_config.json"
-    SCHEMA_FILE = "src/simulator/enterprise_schema.json"
+    CONFIG_FILE = "src/simulator/resources/db_config.json"
+    SCHEMA_FILE = "src/simulator/resources/enterprise_schema.json"
 
     print("🚀 Starting SQLite Database Simulation...")
 
