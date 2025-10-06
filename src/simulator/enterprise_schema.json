@@ -8,9 +8,11 @@
         {"name": "name", "type": "TEXT NOT NULL UNIQUE"}
       ],
       "populate": {
-        "count": 4,
-        "data": [
-          {"column": "name", "faker_provider": "random_element", "args": {"elements": ["Americas", "EMEA", "Asia-Pacific", "LATAM"]}}
+        "source_data": [
+          {"name": "Americas"},
+          {"name": "EMEA"},
+          {"name": "Asia-Pacific"},
+          {"name": "LATAM"}
         ]
       }
     },
@@ -57,9 +59,15 @@
         {"name": "name", "type": "TEXT NOT NULL UNIQUE"}
       ],
       "populate": {
-        "count": 8,
-        "data": [
-          {"column": "name", "faker_provider": "random_element", "args": {"elements": ["Engineering", "Sales", "Marketing", "Finance", "Human Resources", "Support", "Executive", "Research"]}}
+        "source_data": [
+          {"name": "Engineering"},
+          {"name": "Sales"},
+          {"name": "Marketing"},
+          {"name": "Finance"},
+          {"name": "Human Resources"},
+          {"name": "Support"},
+          {"name": "Executive"},
+          {"name": "Research"}
         ]
       }
     },
@@ -129,9 +137,16 @@
         {"name": "name", "type": "TEXT NOT NULL UNIQUE"}
       ],
       "populate": {
-        "count": 25,
-        "data": [
-          {"column": "name", "faker_provider": "random_element", "args": {"elements": ["Python", "Java", "Project Management", "SQL", "Cloud Computing", "AWS", "Azure", "Docker", "Kubernetes", "Machine Learning", "Data Analysis", "React", "Vue.js", "Go", "Rust", "Public Speaking", "Negotiation", "Graphic Design", "UI/UX", "Scrum Master", "Agile", "C++", "System Design", "DevOps", "CI/CD"]}}
+        "source_data": [
+          {"name": "Python"}, {"name": "Java"}, {"name": "Project Management"},
+          {"name": "SQL"}, {"name": "Cloud Computing"}, {"name": "AWS"},
+          {"name": "Azure"}, {"name": "Docker"}, {"name": "Kubernetes"},
+          {"name": "Machine Learning"}, {"name": "Data Analysis"}, {"name": "React"},
+          {"name": "Vue.js"}, {"name": "Go"}, {"name": "Rust"},
+          {"name": "Public Speaking"}, {"name": "Negotiation"}, {"name": "Graphic Design"},
+          {"name": "UI/UX"}, {"name": "Scrum Master"}, {"name": "Agile"},
+          {"name": "C++"}, {"name": "System Design"}, {"name": "DevOps"},
+          {"name": "CI/CD"}
         ]
       }
     },
@@ -194,10 +209,21 @@
         {"name": "parent_category_id", "type": "INTEGER", "foreign_key": "product_categories(id) ON DELETE SET NULL"}
       ],
       "populate": {
-        "count": 15,
-        "data": [
-          {"column": "name", "faker_provider": "unique.word", "args": {"ext_word_list": ["Electronics", "Books", "Clothing", "Home & Garden", "Toys", "Computers", "Smartphones", "Laptops", "Fiction", "Non-Fiction", "Men's Wear", "Women's Wear", "Kitchen", "Furniture", "Board Games"]}},
-          {"column": "parent_category_id", "faker_provider": "random_element", "source_table": "product_categories", "source_column": "id", "allow_null": 0.3}
+        "source_data": [
+          {"name": "Electronics"}, {"name": "Books"}, {"name": "Clothing"},
+          {"name": "Home & Garden"}, {"name": "Toys"}, {"name": "Computers"},
+          {"name": "Smartphones"}, {"name": "Laptops"}, {"name": "Fiction"},
+          {"name": "Non-Fiction"}, {"name": "Men's Wear"}, {"name": "Women's Wear"},
+          {"name": "Kitchen"}, {"name": "Furniture"}, {"name": "Board Games"}
+        ],
+        "post_populate": [
+          {
+            "column": "parent_category_id",
+            "faker_provider": "random_element",
+            "source_table": "product_categories",
+            "source_column": "id",
+            "allow_null": 0.3
+          }
         ]
       }
     },
@@ -214,7 +240,7 @@
       "populate": {
         "count": 500,
         "data": [
-          {"column": "name", "faker_provider": "word", "args": {"ext_word_list": ["Widget", "Gadget", "Device", "Appliance", "Tool", "Accessory", "Component"]}},
+          {"column": "name", "faker_provider": "unique.catch_phrase"},
           {"column": "description", "faker_provider": "sentence"},
           {"column": "unit_price", "faker_provider": "pydecimal", "args": {"left_digits": 3, "right_digits": 2, "positive": true}},
           {"column": "category_id", "faker_provider": "random_element", "source_table": "product_categories", "source_column": "id"},
@@ -230,10 +256,19 @@
         {"name": "location_id", "type": "INTEGER", "foreign_key": "locations(id)"}
       ],
       "populate": {
-        "count": 10,
-        "data": [
-          {"column": "name", "faker_provider": "word", "args": {"ext_word_list": ["Central Hub", "North Sector", "East Wing", "West Depot", "South Bay"]}},
-          {"column": "location_id", "faker_provider": "random_element", "source_table": "locations", "source_column": "id"}
+        "source_data": [
+            {"name": "Central Hub"}, {"name": "North Sector"}, {"name": "East Wing"},
+            {"name": "West Depot"}, {"name": "South Bay"}, {"name": "Metroplex"},
+            {"name": "Regional Center"}, {"name": "Logistics Point"}, {"name": "Coastal Terminal"},
+            {"name": "Inland Port"}
+        ],
+        "post_populate": [
+            {
+                "column": "location_id",
+                "faker_provider": "random_element",
+                "source_table": "locations",
+                "source_column": "id"
+            }
         ]
       }
     },
@@ -416,9 +451,12 @@
           {"name": "last_login", "type": "DATETIME"}
       ],
       "populate": {
-          "count": 200,
+          "map_source": {
+            "source_table": "employees",
+            "source_column": "id"
+          },
           "data": [
-              {"column": "employee_id", "faker_provider": "random_element", "source_table": "employees", "source_column": "id"},
+              {"column": "employee_id", "is_source_id": true},
               {"column": "username", "faker_provider": "unique.user_name"},
               {"column": "password_hash", "faker_provider": "sha256"},
               {"column": "last_login", "faker_provider": "date_time_this_month"}
