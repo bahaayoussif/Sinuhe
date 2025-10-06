@@ -13,3 +13,7 @@ To empower anyone, regardless of technical skill, to converse with their data. W
 ## License
 
 This project is distributed under the MIT License. See the [`LICENSE`](LICENSE) file for more information.
+
+## Author
+
+**Bahaa ElDeen Youssef** ([Bob The Machine Learner](https://www.linkedin.com/in/bahaayoussif/))
