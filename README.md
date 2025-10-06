@@ -9,3 +9,7 @@ To transform raw data into clear narratives, providing structured queries with s
 
 # Mission
 To empower anyone, regardless of technical skill, to converse with their data. We do this by providing an intelligent layer that translates natural language into precise SQL, making data exploration intuitive and immediate.
+
+## License
+
+This project is distributed under the MIT License. See the [`LICENSE`](https://github.com/bahaayoussif/Sinuhe/blob/main/LICENSE) file for more information.
