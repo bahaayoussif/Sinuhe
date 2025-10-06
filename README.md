@@ -12,4 +12,4 @@ To empower anyone, regardless of technical skill, to converse with their data. W
 
 ## License
 
-This project is distributed under the MIT License. See the [`LICENSE`](https://github.com/bahaayoussif/Sinuhe/blob/main/LICENSE) file for more information.
+This project is distributed under the MIT License. See the [`LICENSE`](LICENSE) file for more information.
